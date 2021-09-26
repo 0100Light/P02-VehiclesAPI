@@ -3,6 +3,8 @@ package com.udacity.vehicles.service;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -93,13 +95,14 @@ public class CarService {
         /**
          * TODO: Find the car by ID from the `repository` if it exists.
          *   If it does not exist, throw a CarNotFoundException
-         */
-
-
-        /**
          * TODO: Delete the car from the repository.
          */
-
+        Optional<Car> optionalCar = repository.findById(id);
+        if (optionalCar.isPresent()){
+            repository.deleteById(id);
+        } else {
+            throw new CarNotFoundException();
+        }
 
     }
 }

@@ -117,11 +117,15 @@ class CarController {
      * @param id The ID number of the vehicle to remove.
      * @return response that the related vehicle is no longer in the system
      */
-    @DeleteMapping("/{id}")
-    ResponseEntity<?> delete(@PathVariable Long id) {
+    @PostMapping("delete")
+    ResponseEntity<?> delete(@RequestParam(name = "id", required = true) Long id) {
         /**
          * TODO: Use the Car Service to delete the requested vehicle.
          */
+        Optional<Car> optionalCar = Optional.ofNullable(carService.findById(id));
+        if (optionalCar.isPresent()){
+            carService.delete(id);
+        }
         return ResponseEntity.noContent().build();
     }
 }
