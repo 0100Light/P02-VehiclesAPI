@@ -78,8 +78,8 @@ class CarController {
          *   Update the first line as part of the above implementing.
          */
         if (car != null) {
-            carService.save(car);
-            Resource<Car> resource = assembler.toResource(car);
+            Car savedCar = carService.save(car);
+            Resource<Car> resource = assembler.toResource(savedCar);
             return ResponseEntity.created(new URI(resource.getId().expand().getHref())).body(resource);
         }
         Resource<Car> resource = assembler.toResource(new Car());

@@ -1,7 +1,6 @@
 package com.udacity.vehicles.api;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -33,6 +32,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.testng.Assert;
 
 /**
  * Implements testing of the CarController class.
@@ -58,6 +59,7 @@ public class CarControllerTest {
     @MockBean
     private MapsClient mapsClient;
 
+    private String carJsonString;
     /**
      * Creates pre-requisites for testing, such as an example car.
      */
@@ -68,6 +70,7 @@ public class CarControllerTest {
         given(carService.save(any())).willReturn(car);
         given(carService.findById(any())).willReturn(car);
         given(carService.list()).willReturn(Collections.singletonList(car));
+        carJsonString = "{\"carList\":[{\"id\":1,\"createdAt\":null,\"modifiedAt\":null,\"condition\":\"USED\",\"details\":{\"body\":\"sedan\",\"model\":\"Impala\",\"manufacturer\":{\"code\":101,\"name\":\"Chevrolet\"},\"numberOfDoors\":4,\"fuelType\":\"Gasoline\",\"engine\":\"3.6L V6\",\"mileage\":32280,\"modelYear\":2018,\"productionYear\":2018,\"externalColor\":\"white\"}";
     }
 
     /**
@@ -96,7 +99,14 @@ public class CarControllerTest {
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
+        createCar();
+        Car car = getCar();
+        MvcResult res = mvc.perform(
+                get("/cars")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
 
+        Assert.assertTrue(res.getResponse().getContentAsString().contains(carJsonString));
     }
 
     /**
@@ -109,6 +119,13 @@ public class CarControllerTest {
          * TODO: Add a test to check that the `get` method works by calling
          *   a vehicle by ID. This should utilize the car from `getCar()` below.
          */
+        createCar();
+        MvcResult res = mvc.perform(
+                get("/cars/?id=1")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andReturn();
+        String resString = res.getResponse().getContentAsString();
+        Assert.assertTrue(resString.contains(carJsonString));
     }
 
     /**
@@ -122,6 +139,10 @@ public class CarControllerTest {
          *   when the `delete` method is called from the Car Controller. This
          *   should utilize the car from `getCar()` below.
          */
+        createCar();
+        MvcResult res = mvc.perform(
+                post("/cars/delete?id=1")
+        ).andExpect(status().is2xxSuccessful()).andReturn();
     }
 
     /**
