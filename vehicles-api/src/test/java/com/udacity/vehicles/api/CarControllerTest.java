@@ -145,6 +145,24 @@ public class CarControllerTest {
         ).andExpect(status().is2xxSuccessful()).andReturn();
     }
 
+    @Test
+    public void updateCar() throws Exception {
+        createCar();
+
+        // updated Car
+        Car c = getCar();
+        c.setCondition(Condition.NEW);
+        c.setId(1L);
+
+        // post update data
+        mvc.perform(
+                post("/cars/update?id=1")
+                        .content(json.write(c).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        ).andExpect(status().isOk());
+    }
+
+
     /**
      * Creates an example Car object for use in testing.
      * @return an example Car object
